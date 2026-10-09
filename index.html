@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <meta name="theme-color" content="#0f766e" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="description" content="دستیار ثبت سریع سند فاکتور - سیستم مالی آذربند آب" />
+  <title>دستیار ثبت سند فاکتور | آذربند آب</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
+  <style>
+    :root {
+      --primary: #0f766e;
+      --primary-dark: #0d5c56;
+      --accent: #f59e0b;
+      --bg: #f0fdfa;
+      --card: #ffffff;
+      --text: #134e4a;
+      --muted: #5eead4;
+      --danger: #dc2626;
+      --success: #059669;
+      --border: #99f6e4;
+      --radius: 16px;
+      --shadow: 0 4px 20px rgba(15, 118, 110, 0.12);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Tahoma", "Segoe UI", system-ui, sans-serif;
+      background: linear-gradient(160deg, #f0fdfa 0%, #ccfbf1 100%);
+      color: var(--text);
+      min-height: 100dvh;
+      padding: 12px;
+      line-height: 1.6;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .app {
+      max-width: 520px;
+      margin: 0 auto;
+      padding-bottom: 40px;
+    }
+    header {
+      text-align: center;
+      padding: 20px 10px 12px;
+    }
+    header h1 {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--primary-dark);
+    }
+    header p {
+      font-size: 0.85rem;
+      color: #0f766e;
+      opacity: 0.85;
+      margin-top: 4px;
+    }
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 18px 16px;
+      margin-bottom: 14px;
+      border: 1px solid var(--border);
+    }
+    .card h2 {
+      font-size: 0.95rem;
+      color: var(--primary);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .card h2::before {
+      content: "";
+      width: 6px;
+      height: 18px;
+      background: var(--primary);
+      border-radius: 3px;
+    }
+    label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: #0f766e;
+    }
+    .field { margin-bottom: 14px; }
+    input, select, textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      font-size: 1rem;
+      font-family: inherit;
+      background: #f8fffe;
+      color: var(--text);
+      transition: border-color 0.2s;
+      -webkit-appearance: none;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.15);
+    }
+    textarea { min-height: 70px; resize: vertical; }
+    .row-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .toggle-group {
+      display: flex;
+      gap: 8px;
+      margin-top: 4px;
+    }
+    .toggle-btn {
+      flex: 1;
+      padding: 10px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      background: #f8fffe;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s;
+    }
+    .toggle-btn.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 14px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      transition: transform 0.1s, background 0.2s;
+    }
+    .btn:active { transform: scale(0.98); }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      box-shadow: 0 4px 14px rgba(15, 118, 110, 0.35);
+    }
+    .btn-secondary {
+      background: #ecfdf5;
+      color: var(--primary-dark);
+      border: 1.5px solid var(--border);
+      margin-top: 10px;
+    }
+    .btn-copy {
+      background: var(--accent);
+      color: #1c1917;
+      margin-top: 12px;
+    }
+    .result {
+      display: none;
+    }
+    .result.show { display: block; }
+    .preview-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.75rem;
+      margin-top: 8px;
+      overflow-x: auto;
+      display: block;
+    }
+    .preview-table th, .preview-table td {
+      border: 1px solid #99f6e4;
+      padding: 6px 4px;
+      text-align: center;
+      white-space: nowrap;
+    }
+    .preview-table th {
+      background: var(--primary);
+      color: white;
+      font-weight: 600;
+    }
+    .preview-table tr:nth-child(even) { background: #f0fdfa; }
+    .info-box {
+      background: #ecfdf5;
+      border-right: 4px solid var(--primary);
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      margin-top: 10px;
+    }
+    .warn-box {
+      background: #fef3c7;
+      border-right: 4px solid var(--accent);
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      margin-top: 10px;
+    }
+    .amount-preview {
+      background: #f0fdfa;
+      border-radius: 10px;
+      padding: 10px;
+      margin-top: 8px;
+      font-size: 0.85rem;
+    }
+    .amount-preview span { font-weight: 700; color: var(--primary-dark); }
+    footer {
+      text-align: center;
+      font-size: 0.75rem;
+      color: #0f766e;
+      opacity: 0.7;
+      margin-top: 20px;
+      padding-bottom: 20px;
+    }
+    .install-banner {
+      background: linear-gradient(135deg, #0f766e, #0d9488);
+      color: white;
+      padding: 12px 14px;
+      border-radius: 12px;
+      margin-bottom: 14px;
+      font-size: 0.85rem;
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .install-banner.show { display: flex; }
+    .install-banner button {
+      background: white;
+      color: var(--primary-dark);
+      border: none;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.8rem;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+    @media (min-width: 600px) {
+      body { padding: 24px; }
+      .app { max-width: 560px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <h1>دستیار ثبت سند فاکتور</h1>
+      <p>سیستم مالی آذربند آب · نسخه موبایل</p>
+    </header>
+
+    <div class="install-banner" id="installBanner">
+      <span>برای دسترسی سریع، اپ را به صفحه اصلی اضافه کنید</span>
+      <button id="installBtn">نصب</button>
+    </div>
+
+    <!-- فرم ورودی -->
+    <div class="card" id="formCard">
+      <h2>اطلاعات فاکتور</h2>
+
+      <div class="field">
+        <label for="docType">نوع سند / الگوی ثبت</label>
+        <select id="docType">
+          <option value="purchase_project">خرید مستقیم برای پروژه (مصالح / هزینه)</option>
+          <option value="subcontractor">صورت‌حساب پیمانکار جزء / اکیپ</option>
+          <option value="admin_expense">هزینه عمومی و اداری</option>
+          <option value="prepayment">پیش‌پرداخت به تأمین‌کننده</option>
+          <option value="cash_purchase">خرید نقدی از بانک/صندوق</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="projectCode">کد پروژه <small style="font-weight:400">(مثال: PRJ01)</small></label>
+        <input type="text" id="projectCode" placeholder="PRJ01" autocomplete="off" />
+      </div>
+
+      <div class="field">
+        <label for="projectName">نام پروژه <small style="font-weight:400">(اختیاری – برای شرح)</small></label>
+        <input type="text" id="projectName" placeholder="نام پروژه" autocomplete="off" />
+      </div>
+
+      <div class="row-2">
+        <div class="field">
+          <label for="invoiceNo">شماره فاکتور</label>
+          <input type="text" id="invoiceNo" placeholder="مثلاً 1405-123" autocomplete="off" />
+        </div>
+        <div class="field">
+          <label for="invoiceDate">تاریخ فاکتور</label>
+          <input type="text" id="invoiceDate" placeholder="1405/07/15" autocomplete="off" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="amount">مبلغ فاکتور (ریال)</label>
+        <input type="number" id="amount" placeholder="مثلاً 110000000" inputmode="numeric" />
+      </div>
+
+      <div class="field">
+        <label>آیا مبلغ شامل ارزش افزوده است؟</label>
+        <div class="toggle-group">
+          <div class="toggle-btn active" data-vat="with" id="vatWith">بله – شامل VAT</div>
+          <div class="toggle-btn" data-vat="without" id="vatWithout">خیر – خالص</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="vatRate">نرخ ارزش افزوده (%)</label>
+        <input type="number" id="vatRate" value="10" min="0" max="20" step="0.1" />
+      </div>
+
+      <div class="field">
+        <label for="personCode">کد شخص (تأمین‌کننده / پیمانکار)</label>
+        <input type="text" id="personCode" placeholder="مثلاً P001" autocomplete="off" />
+      </div>
+
+      <div class="field">
+        <label for="description">شرح فاکتور</label>
+        <textarea id="description" placeholder="شرح مختصر فاکتور..."></textarea>
+      </div>
+
+      <div class="field">
+        <label for="docNumber">شماره سند حسابداری <small style="font-weight:400">(پیشنهادی – قابل تغییر)</small></label>
+        <input type="text" id="docNumber" placeholder="مثلاً 15 یا S-1405-0015" />
+      </div>
+
+      <div class="amount-preview" id="amountPreview">
+        خالص: <span id="netAmount">۰</span> · ارزش افزوده: <span id="vatAmount">۰</span> · جمع: <span id="totalAmount">۰</span>
+      </div>
+
+      <button class="btn btn-primary" id="generateBtn" style="margin-top:16px">ایجاد سند حسابداری</button>
+    </div>
+
+    <!-- نتیجه -->
+    <div class="card result" id="resultCard">
+      <h2>سند آماده برای کپی</h2>
+      <div class="info-box">
+        این جدول را کپی کنید و در شیت <strong>سندها</strong> از اولین ردیف خالی بچسبانید.
+        ستون‌های ردیف، نام حساب و وضعیت به‌صورت خودکار پر می‌شوند.
+      </div>
+      <div style="overflow-x:auto; margin-top:12px;">
+        <table class="preview-table" id="previewTable">
+          <thead>
+            <tr>
+              <th>تاریخ</th>
+              <th>شماره سند</th>
+              <th>کد حساب</th>
+              <th>شرح</th>
+              <th>بدهکار</th>
+              <th>بستانکار</th>
+              <th>کد پروژه</th>
+              <th>کد شخص</th>
+            </tr>
+          </thead>
+          <tbody id="previewBody"></tbody>
+        </table>
+      </div>
+      <button class="btn btn-copy" id="copyBtn">کپی جدول (برای پیست در اکسل)</button>
+      <button class="btn btn-secondary" id="newBtn">ثبت فاکتور جدید</button>
+      <div class="warn-box" style="margin-top:14px">
+        <strong>نکته مهم:</strong> بعد از پیست، در اکسل شماره سند همه سطرهای یک فاکتور باید یکسان باشد.
+        جمع بدهکار و بستانکار باید برابر باشد (وضعیت ✔).
+      </div>
+    </div>
+
+    <footer>
+      آذربند آب (سهامی خاص) · دستیار ثبت سریع · نسخه ۱.۰<br>
+      فقط برای استفاده داخلی شرکت
+    </footer>
+  </div>
+
+  <script>
+    // ---------- State ----------
+    let vatMode = "with"; // with | without
+    let deferredPrompt = null;
+
+    // ---------- Install PWA ----------
+    window.addEventListener("beforeinstallprompt", (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      document.getElementById("installBanner").classList.add("show");
+    });
+    document.getElementById("installBtn")?.addEventListener("click", async () => {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === "accepted") {
+        document.getElementById("installBanner").classList.remove("show");
+      }
+      deferredPrompt = null;
+    });
+
+    // ---------- VAT toggle ----------
+    document.getElementById("vatWith").addEventListener("click", () => {
+      vatMode = "with";
+      document.getElementById("vatWith").classList.add("active");
+      document.getElementById("vatWithout").classList.remove("active");
+      updatePreviewAmounts();
+    });
+    document.getElementById("vatWithout").addEventListener("click", () => {
+      vatMode = "without";
+      document.getElementById("vatWithout").classList.add("active");
+      document.getElementById("vatWith").classList.remove("active");
+      updatePreviewAmounts();
+    });
+
+    // ---------- Amount live preview ----------
+    ["amount", "vatRate"].forEach(id => {
+      document.getElementById(id).addEventListener("input", updatePreviewAmounts);
+    });
+
+    function updatePreviewAmounts() {
+      const raw = parseFloat(document.getElementById("amount").value) || 0;
+      const rate = (parseFloat(document.getElementById("vatRate").value) || 0) / 100;
+      let net, vat, total;
+      if (vatMode === "with") {
+        total = raw;
+        net = Math.round(total / (1 + rate));
+        vat = total - net;
+      } else {
+        net = raw;
+        vat = Math.round(net * rate);
+        total = net + vat;
+      }
+      document.getElementById("netAmount").textContent = formatNum(net);
+      document.getElementById("vatAmount").textContent = formatNum(vat);
+      document.getElementById("totalAmount").textContent = formatNum(total);
+    }
+
+    function formatNum(n) {
+      return n.toLocaleString("fa-IR");
+    }
+
+    // ---------- Generate document ----------
+    document.getElementById("generateBtn").addEventListener("click", () => {
+      const type = document.getElementById("docType").value;
+      const projectCode = document.getElementById("projectCode").value.trim();
+      const projectName = document.getElementById("projectName").value.trim();
+      const invoiceNo = document.getElementById("invoiceNo").value.trim();
+      const invoiceDate = document.getElementById("invoiceDate").value.trim();
+      const amountRaw = parseFloat(document.getElementById("amount").value) || 0;
+      const rate = (parseFloat(document.getElementById("vatRate").value) || 0) / 100;
+      const personCode = document.getElementById("personCode").value.trim();
+      const desc = document.getElementById("description").value.trim();
+      let docNum = document.getElementById("docNumber").value.trim();
+
+      // Validation
+      if (!invoiceDate || !/^\d{4}\/\d{2}\/\d{2}$/.test(invoiceDate)) {
+        alert("تاریخ را به شکل صحیح وارد کنید (مثال: 1405/07/15)");
+        return;
+      }
+      if (amountRaw <= 0) {
+        alert("مبلغ فاکتور را وارد کنید");
+        return;
+      }
+      if (!personCode) {
+        alert("کد شخص (تأمین‌کننده یا پیمانکار) را وارد کنید");
+        return;
+      }
+      if (!docNum) {
+        alert("شماره سند حسابداری را وارد کنید (آخرین شماره + ۱)");
+        return;
+      }
+
+      // Calculate amounts
+      let net, vat, total;
+      if (vatMode === "with") {
+        total = amountRaw;
+        net = Math.round(total / (1 + rate));
+        vat = total - net;
+      } else {
+        net = amountRaw;
+        vat = Math.round(net * rate);
+        total = net + vat;
+      }
+
+      // Build description base
+      const baseDesc = desc || `فاکتور ${invoiceNo}` + (projectName ? ` – ${projectName}` : "");
+      const fullDesc = `${baseDesc} (فاکتور ${invoiceNo})`;
+
+      // Build lines based on type
+      let lines = [];
+
+      if (type === "purchase_project") {
+        // بدهکار: 5101 یا 5106 + 1206   بستانکار: 2101
+        // برای سادگی از 5106 (هزینه‌های مستقیم متفرقه) استفاده می‌کنیم؛ کاربر می‌تواند بعداً تغییر دهد
+        lines.push({
+          date: invoiceDate, doc: docNum, account: "5106",
+          desc: fullDesc, debit: net, credit: "", project: projectCode, person: personCode
+        });
+        if (vat > 0) {
+          lines.push({
+            date: invoiceDate, doc: docNum, account: "1206",
+            desc: `ارزش افزوده – ${fullDesc}`, debit: vat, credit: "", project: "", person: personCode
+          });
+        }
+        lines.push({
+          date: invoiceDate, doc: docNum, account: "2101",
+          desc: fullDesc, debit: "", credit: total, project: "", person: personCode
+        });
+      }
+      else if (type === "subcontractor") {
+        // بدهکار: 5103 + 1206   بستانکار: 2102
+        lines.push({
+          date: invoiceDate, doc: docNum, account: "5103",
+          desc: fullDesc, debit: net, credit: "", project: projectCode, person: personCode
+        });
+        if (vat > 0) {
+          lines.push({
+            date: invoiceDate, doc: docNum, account: "1206",
+            desc: `ارزش افزوده – ${fullDesc}`, debit: vat, credit: "", project: "", person: personCode
+          });
+        }
+        lines.push({
+          date: invoiceDate, doc: docNum, account: "2102",
+          desc: fullDesc, debit: "", credit: total, project: "", person: personCode
+        });
+      }
+      else if (type === "admin_expense") {
+        // بدهکار: 6199 + 1206   بستانکار: 2101
+        lines.push({
+          date: invoiceDate, doc: docNum, account: "6199",
+          desc: fullDesc, debit: net, credit: "", project: "", person: personCode
+        });
+        if (vat > 0) {
+          lines.push({
+            date: invoiceDate, doc: docNum, account: "1206",
+            desc: `ارزش افزوده – ${fullDesc}`, debit: vat, credit: "", project: "", person: personCode
+          });
+        }
+        lines.push({
+          date: invoiceDate, doc: docNum, account: "2101",
+          desc: fullDesc, debit: "", credit: total, project: "", person: personCode
+        });
+      }
+      else if (type === "prepayment") {
+        // بدهکار: 1204   بستانکار: 1102 یا 2101
+        // ساده‌سازی: بستانکار 1102 (بانک) – کاربر می‌تواند تغییر دهد
+        lines.push({
+          date: invoiceDate, doc: docNum, account: "1204",
+          desc: fullDesc, debit: total, credit: "", project: projectCode, person: personCode
+        });
+        lines.push({
+          date: invoiceDate, doc: docNum, account: "1102",
+          desc: fullDesc, debit: "", credit: total, project: "", person: personCode
+        });
+      }
+      else if (type === "cash_purchase") {
+        // بدهکار: 5106 + 1206   بستانکار: 1102
+        lines.push({
+          date: invoiceDate, doc: docNum, account: "5106",
+          desc: fullDesc, debit: net, credit: "", project: projectCode, person: personCode
+        });
+        if (vat > 0) {
+          lines.push({
+            date: invoiceDate, doc: docNum, account: "1206",
+            desc: `ارزش افزوده – ${fullDesc}`, debit: vat, credit: "", project: "", person: personCode
+          });
+        }
+        lines.push({
+          date: invoiceDate, doc: docNum, account: "1102",
+          desc: fullDesc, debit: "", credit: total, project: "", person: personCode
+        });
+      }
+
+      // Render table
+      const tbody = document.getElementById("previewBody");
+      tbody.innerHTML = "";
+      lines.forEach(l => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${l.date}</td>
+          <td>${l.doc}</td>
+          <td>${l.account}</td>
+          <td style="text-align:right;max-width:140px;white-space:normal">${l.desc}</td>
+          <td>${l.debit ? l.debit.toLocaleString("en-US") : ""}</td>
+          <td>${l.credit ? l.credit.toLocaleString("en-US") : ""}</td>
+          <td>${l.project || ""}</td>
+          <td>${l.person || ""}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      // Store for copy
+      window._lastLines = lines;
+
+      document.getElementById("resultCard").classList.add("show");
+      document.getElementById("resultCard").scrollIntoView({ behavior: "smooth" });
+    });
+
+    // ---------- Copy to clipboard (tab-separated for Excel) ----------
+    document.getElementById("copyBtn").addEventListener("click", async () => {
+      const lines = window._lastLines || [];
+      if (!lines.length) return;
+
+      // Excel paste expects: تاریخ | شماره سند | کد حساب | شرح | بدهکار | بستانکار | کد پروژه | کد شخص
+      // (columns B to J of سندها, skipping A and E and K L which are formulas)
+      const tsv = lines.map(l => {
+        return [
+          l.date,
+          l.doc,
+          l.account,
+          l.desc,
+          l.debit || "",
+          l.credit || "",
+          l.project || "",
+          l.person || ""
+        ].join("\t");
+      }).join("\n");
+
+      try {
+        await navigator.clipboard.writeText(tsv);
+        const btn = document.getElementById("copyBtn");
+        const old = btn.textContent;
+        btn.textContent = "✓ کپی شد! حالا در اکسل پیست کنید";
+        btn.style.background = "#059669";
+        setTimeout(() => {
+          btn.textContent = old;
+          btn.style.background = "";
+        }, 2500);
+      } catch (e) {
+        // Fallback
+        const ta = document.createElement("textarea");
+        ta.value = tsv;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+        alert("کپی شد. در شیت سندها از ستون تاریخ پیست کنید.");
+      }
+    });
+
+    // ---------- New invoice ----------
+    document.getElementById("newBtn").addEventListener("click", () => {
+      document.getElementById("resultCard").classList.remove("show");
+      // Clear some fields, keep type and rates
+      document.getElementById("invoiceNo").value = "";
+      document.getElementById("amount").value = "";
+      document.getElementById("description").value = "";
+      document.getElementById("docNumber").value = "";
+      updatePreviewAmounts();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+
+    // Init
+    updatePreviewAmounts();
+
+    // Service worker registration for offline
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("sw.js").catch(() => {});
+    }
+  </script>
+</body>
+</html>
