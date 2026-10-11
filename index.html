@@ -336,10 +336,10 @@
 
     <!-- نتیجه -->
     <div class="card result" id="resultCard">
-      <h2>سند آماده برای کپی</h2>
+      <h2>سند ایجاد شد</h2>
       <div class="info-box">
-        این جدول را کپی کنید و در شیت <strong>سندها</strong> از اولین ردیف خالی بچسبانید.
-        ستون‌های ردیف، نام حساب و وضعیت به‌صورت خودکار پر می‌شوند.
+        سند به‌صورت خودکار به گوگل‌شیت ارسال می‌شود.
+        می‌توانید جدول را هم کپی کنید و در شیت <strong>سندها</strong> اکسل بچسبانید (اختیاری).
       </div>
       <div style="overflow-x:auto; margin-top:12px;">
         <table class="preview-table" id="previewTable">
@@ -589,6 +589,50 @@
 
       document.getElementById("resultCard").classList.add("show");
       document.getElementById("resultCard").scrollIntoView({ behavior: "smooth" });
+
+      // ---------- ارسال خودکار به گوگل‌شیت ----------
+      const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwGntgR8q6HbotdB5opZyZ8_ia5EvZseZMXjtTLe0Ybv_FUC84WxqfI1KySC_-nSjNHlg/exec";
+
+      // تبدیل مقادیر خالی به عدد برای بدهکار/بستانکار
+      const payloadLines = lines.map(l => ({
+        date: l.date,
+        doc: l.doc,
+        account: l.account,
+        desc: l.desc,
+        debit: l.debit === "" || l.debit === null ? "" : Number(l.debit),
+        credit: l.credit === "" || l.credit === null ? "" : Number(l.credit),
+        project: l.project || "",
+        person: l.person || ""
+      }));
+
+      // نمایش وضعیت ارسال
+      let statusEl = document.getElementById("sendStatus");
+      if (!statusEl) {
+        statusEl = document.createElement("div");
+        statusEl.id = "sendStatus";
+        statusEl.style.cssText = "margin-top:12px;padding:10px;border-radius:10px;font-size:0.9rem;text-align:center;";
+        document.getElementById("resultCard").appendChild(statusEl);
+      }
+      statusEl.style.background = "#fef3c7";
+      statusEl.style.color = "#92400e";
+      statusEl.textContent = "در حال ارسال خودکار به گوگل‌شیت...";
+
+      fetch(GOOGLE_SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain" },
+        body: JSON.stringify({ lines: payloadLines })
+      })
+      .then(() => {
+        statusEl.style.background = "#d1fae5";
+        statusEl.style.color = "#065f46";
+        statusEl.textContent = "✓ سند با موفقیت به گوگل‌شیت ارسال شد";
+      })
+      .catch(() => {
+        statusEl.style.background = "#fee2e2";
+        statusEl.style.color = "#991b1b";
+        statusEl.textContent = "خطا در ارسال. لطفاً اتصال اینترنت را بررسی کنید یا از دکمه کپی استفاده کنید.";
+      });
     });
 
     // ---------- Copy to clipboard (tab-separated for Excel) ----------
