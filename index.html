@@ -302,7 +302,7 @@
       <div class="field">
         <label>آیا مبلغ شامل ارزش افزوده است؟</label>
         <div class="toggle-group">
-          <div class="toggle-btn active" data-vat="with" id="vatWith">بله – مبلغ شامل ارزش افزوده است</div>
+          <div class="toggle-btn active" data-vat="with" id="vatWith">بله – ارزش افزوده اضافه شود</div>
           <div class="toggle-btn" data-vat="without" id="vatWithout">خیر – بدون ارزش افزوده</div>
         </div>
       </div>
@@ -417,12 +417,12 @@
       const rate = (parseFloat(document.getElementById("vatRate").value) || 0) / 100;
       let net, vat, total;
       if (vatMode === "with") {
-        // مبلغ واردشده = جمع کل (شامل ارزش افزوده)
-        total = raw;
-        net = Math.round(total / (1 + rate));
-        vat = total - net;
+        // مبلغ واردشده = خالص؛ ارزش افزوده اضافه می‌شود
+        net = raw;
+        vat = Math.round(net * rate);
+        total = net + vat;
       } else {
-        // مبلغ واردشده = خالص — بدون ارزش افزوده
+        // بدون ارزش افزوده
         net = raw;
         vat = 0;
         total = net;
@@ -470,12 +470,12 @@
       // Calculate amounts
       let net, vat, total;
       if (vatMode === "with") {
-        // مبلغ واردشده = جمع کل (شامل ارزش افزوده)
-        total = amountRaw;
-        net = Math.round(total / (1 + rate));
-        vat = total - net;
+        // مبلغ واردشده = خالص؛ ارزش افزوده اضافه می‌شود
+        net = amountRaw;
+        vat = Math.round(net * rate);
+        total = net + vat;
       } else {
-        // مبلغ واردشده = خالص — بدون ارزش افزوده
+        // بدون ارزش افزوده
         net = amountRaw;
         vat = 0;
         total = net;
